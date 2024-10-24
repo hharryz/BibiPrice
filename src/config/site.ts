@@ -5,23 +5,19 @@ export const siteLib = {
   description: "BibiPrice is a price tracker for e-commerce websites.",
   navItems: [
     {
-      label: "Home",
+      label: "首页",
       href: "/",
     },
     {
-      label: "Problem Set",
-      href: "/problem",
+      label: "比价",
+      href: "/compare",
     },
     {
-      label: "Ranking",
-      href: "/rank",
-    },
-    {
-      label: "Submissions",
-      href: "/submission",
+      label: "订阅",
+      href: "/subscribe",
     },
   ],
-  navMenuItems: [
+  userMenuItems: [
     {
       label: "Profile",
       href: "/profile",

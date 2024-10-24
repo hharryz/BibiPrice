@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { siteLib } from "@/lib/site";
+import { siteLib } from "@/config/site";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
 import "./globals.css";
