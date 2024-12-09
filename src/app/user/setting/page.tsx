@@ -1,5 +1,5 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,36 +7,50 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 
-import prisma from "@/lib/prisma"
+import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
+import UserInfoCard from "./components/user-info";
 
 export default async function User() {
-  const res = await prisma.user.create({
-    data: {
-      name: "Bob",
-      email: "111",
-    },
-  })
-  console.log(res)
-  const users = await prisma.user.findMany()
+  let user = null;
+  const session = await auth();
+
+  if (session === null) {
+    return (
+      <>
+        <h1>请先登录！</h1>
+      </>
+    );
+  } else {
+    if (session.user?.email)
+      user = await prisma.user.findUnique({
+        where: {
+          // id: session.user.id,
+          email: session.user.email,
+        },
+      });
+    console.log(user);
+  }
 
   return (
     <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted/40 p-4 md:gap-8 md:p-10">
       <div className="mx-auto grid w-full max-w-6xl gap-2">
-        <h1 className="text-3xl font-semibold">Settings</h1>
+        {/* <h1 className="text-3xl font-semibold">用户设置</h1> */}
         <ul>
-          {users.map((user) => (
+          {/* {users.map((user) => (
             <li key={user.id}>
-              <Link href={`/user/${user.id}`}>{user.name}</Link>
+              <Link href={`/user/${user.id}`}>{user.email}</Link>
             </li>
-          ))}
+          ))} */}
         </ul>
       </div>
-      <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
-        <nav
+      {/* <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]"> */}
+      <div className="mx-auto w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
+        {/* <nav
           className="grid gap-4 text-sm text-muted-foreground"
           x-chunk="dashboard-04-chunk-0"
         >
@@ -48,25 +62,10 @@ export default async function User() {
           <Link href="#">Support</Link>
           <Link href="#">Organizations</Link>
           <Link href="#">Advanced</Link>
-        </nav>
+        </nav> */}
         <div className="grid gap-6">
-          <Card x-chunk="dashboard-04-chunk-1">
-            <CardHeader>
-              <CardTitle>Store Name</CardTitle>
-              <CardDescription>
-                Used to identify your store in the marketplace.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form>
-                <Input placeholder="Store Name" />
-              </form>
-            </CardContent>
-            <CardFooter className="border-t px-6 py-4">
-              <Button>Save</Button>
-            </CardFooter>
-          </Card>
-          <Card x-chunk="dashboard-04-chunk-2">
+          <UserInfoCard />
+          {/* <Card x-chunk="dashboard-04-chunk-2">
             <CardHeader>
               <CardTitle>Plugins Directory</CardTitle>
               <CardDescription>
@@ -94,7 +93,7 @@ export default async function User() {
             <CardFooter className="border-t px-6 py-4">
               <Button>Save</Button>
             </CardFooter>
-          </Card>
+          </Card> */}
         </div>
       </div>
     </main>

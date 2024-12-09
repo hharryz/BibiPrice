@@ -1,7 +1,14 @@
 "use server";
 
 import { signIn } from "@/auth";
+import exp from "constants";
 
-export default async function requestAuth(email: string) {
+export async function authMagicLink(email: string) {
   await signIn("resend", { email });
 }
+
+export async function authPassword(email: string, password: string) {
+  console.log(email, password)
+  await signIn("credentials", { email, password });
+}
+

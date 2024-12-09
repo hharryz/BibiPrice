@@ -1,15 +1,11 @@
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { saltAndHashPassword } from "@/utils/password";
+import { getUserFromDb } from "@/lib/password";
 import { ZodError } from "zod";
 import { signInSchema } from "@/lib/zod";
-import { getUserFromDb } from "@/utils/db";
 
 export default {
   providers: [
-    // Resend({
-    //   from: 'bibiprice@uqbarz.com',
-    // }),
     Credentials({
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
       // e.g. domain, username, password, 2FA token, etc.
@@ -20,19 +16,19 @@ export default {
       authorize: async (credentials) => {
         try {
           let user = null;
-
+          console.log(credentials);
+          //  zod schema validation
           const { email, password } = await signInSchema.parseAsync(
             credentials
           );
 
-          // logic to salt and hash password
-          const pwHash = saltAndHashPassword(password);
-
           // logic to verify if the user exists
-          user = await getUserFromDb(email, pwHash);
-
+          user = await getUserFromDb(email, password);
+          console.log(user)
           if (!user) {
-            throw new Error("User not found.");
+            console.log("User not found");
+            throw new Error(`User not found. If it's your first time logging in,
+                             please register via email magic link.`);
           }
 
           // return JSON object with the user data

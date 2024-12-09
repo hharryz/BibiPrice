@@ -7,9 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import requestAuth from "./sign-request";
+import { authMagicLink, authPassword } from "./sign-request";
 
-import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 import { signIn } from "@/auth";
 
@@ -21,30 +20,42 @@ export function UserAuthForm({
 }: React.HTMLAttributes<HTMLDivElement>) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [email, setEmail] = React.useState<string>("");
+  const [password, setPassword] = React.useState<string>("");
 
-  async function onSubmit(event: React.SyntheticEvent) {
+  async function submitMagicLink(event: React.SyntheticEvent) {
     event.preventDefault();
     setIsLoading(true);
 
     try {
-      await requestAuth(email).then(() => {
+      await authMagicLink(email).then(() => {
         setIsLoading(false);
       });
-      // await signIn("resend", { email }).then(() => {
-      //   setIsLoading(false)
-      // })
     } catch (error) {
       if (error instanceof AuthError) {
-        // return redirect(`${SIGNIN_ERROR_URL}?error=${error.type}`)
         console.log(error);
       }
       throw error;
     }
 
-    // "use server"
-    // await requestAuth(email).then(() => {
-    //   setIsLoading(false)
-    // })
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+  }
+
+  async function submitPassword(event: React.SyntheticEvent) {
+    event.preventDefault();
+    setIsLoading(true);
+
+    try {
+      await authPassword(email, password).then(() => {
+        setIsLoading(false);
+      });
+    } catch (error) {
+      if (error instanceof AuthError) {
+        console.log(error);
+      }
+      throw error;
+    }
 
     setTimeout(() => {
       setIsLoading(false);
@@ -72,13 +83,13 @@ export function UserAuthForm({
             disabled={isLoading}
           />
         </div>
-        <Button disabled={isLoading} onClick={onSubmit}>
+        <Button disabled={isLoading} onClick={submitMagicLink}>
           {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
-          Sign In with Email
+          MagicLink验证
         </Button>
       </div>
       {/* </form> */}
-      {/* <div className="relative">
+      <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />
         </div>
@@ -88,14 +99,18 @@ export function UserAuthForm({
           </span>
         </div>
       </div>
-      <Button variant="outline" type="button" disabled={isLoading}>
-        {isLoading ? (
-          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <Icons.gitHub className="mr-2 h-4 w-4" />
-        )}{" "}
-        GitHub
-      </Button> */}
+      <Input
+            id="email"
+            placeholder="请输入密码..."
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            type="password"
+            disabled={isLoading}
+          />
+      <Button disabled={isLoading} onClick={submitPassword}>
+        {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+        密码登录
+      </Button>
     </div>
   );
 }
