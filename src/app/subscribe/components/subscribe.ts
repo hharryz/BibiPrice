@@ -3,7 +3,9 @@
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { detailDangdang } from "@/lib/crawler/dd";
+import { detailKongfuzi } from "@/lib/crawler/kfz";
 import type { Product } from "@/types/product/product";
+import { sendSubscription } from "@/lib/mail";
 
 export async function addProduct(identifier: string) {
   const session = await auth();
@@ -42,9 +44,8 @@ export async function updateSubscription() {
     return;
   }
 
-  let alerts: Product[] = [];
-
   const updatePrice = async () => {
+    const alerts: Product[] = [];
     //  get all subscriptions
     const subscriptions = await prisma.subscription.findMany({
       where: {
@@ -57,49 +58,61 @@ export async function updateSubscription() {
     });
 
     //  to avoid API query limit, we only update the price of subscriptions
-    subscriptions.forEach(async (sub) => {
-      const nowPrice = sub.pIdentifier.startsWith("dd")
-        ? await detailDangdang(sub.pIdentifier.replace("dd", ""))
-        : "0";
-      console.log("update subscription", sub.pIdentifier, nowPrice);
-      await prisma.priceHistory.create({
-        data: {
-          price: nowPrice,
-          pIdentifier: sub.pIdentifier,
-        },
-      });
+    await Promise.all(
+      subscriptions.map(async (sub) => {
+        let nowPrice: string = "";
+        if (sub.pIdentifier.startsWith("dd")) {
+          nowPrice = await detailDangdang(sub.pIdentifier.replace("dd", ""));
+        } else if (sub.pIdentifier.startsWith("kfz")) {
+          nowPrice = await detailKongfuzi(sub.pIdentifier.replace("kfz", ""));
+        }
+        console.log("update subscription", sub.pIdentifier, nowPrice);
+        await prisma.priceHistory.create({
+          data: {
+            price: nowPrice,
+            pIdentifier: sub.pIdentifier,
+          },
+        });
 
-      await prisma.product.update({
-        where: {
-          identifier: sub.pIdentifier,
-        },
-        data: {
-          price: nowPrice,
-        },
-      });
+        if (
+          sub.expectedPrice &&
+          parseFloat(nowPrice) <= parseFloat(sub.expectedPrice)
+        ) {
+          const product = await prisma.product.findUnique({
+            where: {
+              identifier: sub.pIdentifier,
+            },
+          });
+          if (product) {
+            alerts.push(product);
+          }
+        }
 
-      if (sub.expectedPrice && nowPrice <= sub.expectedPrice) {
-        const product = await prisma.product.findUnique({
+        await prisma.product.update({
           where: {
             identifier: sub.pIdentifier,
           },
+          data: {
+            price: nowPrice,
+          },
         });
-        if (product) {
-          alerts.push(product);
-        }
-      }
-
-    });
+      })
+    );
 
     if (alerts.length > 0) {
       console.log("alerts", alerts);
+      //  send email to user
+      sendSubscription({
+        to: session.user?.email ? session.user.email : "",
+        alerts,
+      });
     }
   };
 
   setInterval(async () => {
     console.log("update subscription");
     updatePrice();
-  }, 1000 * 60 * 60 * 24);  //  round-robin update every 24 hours
+  }, 1000 * 60 * 60 * 24); //  round-robin update every 24 hours
 
   updatePrice();
 }
