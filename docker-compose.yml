@@ -1,12 +1,46 @@
 services:
+  next-app:
+    container_name: next-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    # Set environment variables directly in the compose file
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    
+    # Set environment variables based on the .env file
+    env_file:
+      - .env
+      # - .env.local
+    volumes:
+      - type: bind
+        source: ./src
+        target: /app/src
+      - type: bind
+        source: ./prisma
+        target: /app/prisma
+    restart: always
+    ports:
+      - '3000:3000'
+    networks:
+      - app-network
+
   mongodb:
     image: mongo:latest
-    container_name: mongodb
-    ports:
-      - '27017:27017'
+    container_name: next-mongodb
     command: --replSet rs0
     volumes:
       - mongodb_data:/data/db
+    networks:
+      - app-network
 
 volumes:
+  # Define the database volume to persist the data
   mongodb_data:
+
+# Define a network, which allows containers to communicate
+# with each other, by using their container name as a hostname
+networks:
+  app-network:
+    driver: bridge
