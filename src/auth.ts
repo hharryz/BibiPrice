@@ -6,7 +6,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 
 import Resend from "next-auth/providers/resend";
 
-import { sendAuthRequest } from "./lib/authSendRequest";
+import { sendAuthRequest } from "./lib/mail";
 
 const combinedProviders = [
   ...authConfig.providers,

@@ -16,7 +16,6 @@ export default {
       authorize: async (credentials) => {
         try {
           let user = null;
-          console.log(credentials);
           //  zod schema validation
           const { email, password } = await signInSchema.parseAsync(
             credentials
@@ -24,9 +23,8 @@ export default {
 
           // logic to verify if the user exists
           user = await getUserFromDb(email, password);
-          console.log(user)
+          console.log("Authenticating user, ", user)
           if (!user) {
-            console.log("User not found");
             throw new Error(`User not found. If it's your first time logging in,
                              please register via email magic link.`);
           }
@@ -38,6 +36,7 @@ export default {
             // Return `null` to indicate that the credentials are invalid
             return null;
           }
+          console.log(error);
         }
       },
     }),

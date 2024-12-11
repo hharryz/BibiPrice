@@ -10,25 +10,24 @@ import { Label } from "@/components/ui/label";
 import { authMagicLink, authPassword } from "./sign-request";
 
 import { AuthError } from "next-auth";
-import { signIn } from "@/auth";
 
-// interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserAuthForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isLoadingMagicLink, setIsLoadingMagicLink] = React.useState<boolean>(false);
+  const [isLoadingPassword, setIsLoadingPassword] = React.useState<boolean>(false);
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
 
   async function submitMagicLink(event: React.SyntheticEvent) {
     event.preventDefault();
-    setIsLoading(true);
+    setIsLoadingMagicLink(true);
 
     try {
       await authMagicLink(email).then(() => {
-        setIsLoading(false);
+        setIsLoadingMagicLink(false);
       });
     } catch (error) {
       if (error instanceof AuthError) {
@@ -38,18 +37,18 @@ export function UserAuthForm({
     }
 
     setTimeout(() => {
-      setIsLoading(false);
+      setIsLoadingMagicLink(false);
     }, 3000);
   }
 
   async function submitPassword(event: React.SyntheticEvent) {
     event.preventDefault();
-    setIsLoading(true);
+    setIsLoadingPassword(true);
 
     try {
       await authPassword(email, password).then(() => {
-        setIsLoading(false);
-      });
+        setIsLoadingPassword(false);
+      }); 
     } catch (error) {
       if (error instanceof AuthError) {
         console.log(error);
@@ -58,7 +57,7 @@ export function UserAuthForm({
     }
 
     setTimeout(() => {
-      setIsLoading(false);
+      setIsLoadingPassword(false);
     }, 3000);
   }
 
@@ -80,11 +79,11 @@ export function UserAuthForm({
             autoCapitalize="none"
             autoComplete="email"
             autoCorrect="off"
-            disabled={isLoading}
+            disabled={isLoadingMagicLink}
           />
         </div>
-        <Button disabled={isLoading} onClick={submitMagicLink}>
-          {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+        <Button disabled={isLoadingMagicLink} onClick={submitMagicLink}>
+          {isLoadingMagicLink && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
           MagicLink验证
         </Button>
       </div>
@@ -105,10 +104,10 @@ export function UserAuthForm({
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             type="password"
-            disabled={isLoading}
+            disabled={isLoadingPassword}
           />
-      <Button disabled={isLoading} onClick={submitPassword}>
-        {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+      <Button disabled={isLoadingPassword} onClick={submitPassword}>
+        {isLoadingPassword && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
         密码登录
       </Button>
     </div>

@@ -2,6 +2,9 @@
 
 import prisma from "@/lib/prisma";
 import { saltAndHashPassword } from "@/lib/password";
+import { updateSchema } from "@/lib/zod";
+import { ZodError } from "zod";
+import { auth } from "@/auth";
 
 
 export interface FormData {
@@ -12,23 +15,36 @@ export interface FormData {
 }
 
 export default async function updateForm(formData: FormData) {
-    console.log("BUtton Clicked");
-  console.log(formData);
+  const session = await auth()
+  if (!session) {
+    throw new Error('Not authenticated');
+  }
+  if (formData.email !== session.user?.email) {
+    throw new Error('Email does not match');
+  }
   if (formData.password !== formData.confirmPassword) {
     throw new Error('Passwords do not match');
   }
-  const hash = await saltAndHashPassword(formData.password);
-    console.log(hash);
-    prisma.user.update({
-        where: {
-            email: formData.email,
-        },
-        data: {
-            name: formData.username,
-            hashPassword: hash,
-        },
-    }).catch((error) => {
-        throw new Error(error);
+
+  try {
+    const { username, email, password } = await updateSchema.parseAsync(formData);
+
+    const hash = await saltAndHashPassword(password);
+    await prisma.user.update({
+      where: {
+        email: email,
+      },
+      data: {
+        name: username,
+        hashPassword: hash,
+      },
+    });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new Error('Invalid form data');
     }
-    );
+    if (error instanceof Error) {
+      throw new Error('Error updating!');
+    }
+  }
 }
