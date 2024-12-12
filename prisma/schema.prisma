@@ -19,6 +19,7 @@ model User {
   email         String?         @unique
   emailVerified DateTime?
   image         String?
+  hashPassword  String?
   accounts      Account[]
   sessions      Session[]
  
@@ -76,10 +77,11 @@ model Product {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
-  price       Float       //  sad news that prisma does not support Decimal type currently
-  image       String[]
-  platform    String      //  ?
-  barcode     String
+  shop        String
+  price       String
+  image       String
+  platform    String
+  identifier  String  @unique
   category    String[]
   url         String
 
@@ -92,12 +94,11 @@ model Product {
 
 
 model PriceHistory {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  productId String   @db.ObjectId
-  price     Float
-  date      DateTime
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  pIdentifier   String
+  price         String
 
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [pIdentifier], references: [identifier], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -105,13 +106,14 @@ model PriceHistory {
 
 
 model Subscription {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  productId String   @db.ObjectId
-  status    Boolean
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
+  pIdentifier   String
+  expectedPrice String?
+  status        Boolean?
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [pIdentifier], references: [identifier], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

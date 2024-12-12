@@ -57,8 +57,13 @@ const config: Config = {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
+		height: {
+			'header': '4rem',
+			'screen': 'calc(100vh - 4rem)',
+		},
 		fontFamily: {
 			banner: ['new-spirit'],
+			staatliches: ['var(--font-staatliches)'],
 		},
   	}
   },
