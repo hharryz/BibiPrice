@@ -2,7 +2,8 @@ import { ProductArtwork } from "@/components/product-artwork";
 import getProducts from "./components/get-product";
 import { auth } from "@/auth";
 import Link from "next/link";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { Product } from "@/types/product/product";
 
 export default async function ComparePrice({
@@ -35,6 +36,17 @@ export default async function ComparePrice({
           <CardHeader>
             <CardTitle>筛选商品</CardTitle>
           </CardHeader>
+          <CardContent className="flex flex-col gap-2">
+            <ToggleGroup type="multiple">
+              <ToggleGroupItem value="dd" defaultChecked>当当</ToggleGroupItem>
+              <ToggleGroupItem value="jd" defaultChecked>京东</ToggleGroupItem>
+              <ToggleGroupItem value="kfz" defaultChecked>孔夫子</ToggleGroupItem>
+            </ToggleGroup>
+            <ToggleGroup type="single">
+              <ToggleGroupItem value="asc">升序</ToggleGroupItem>
+              <ToggleGroupItem value="desc">降序</ToggleGroupItem>
+            </ToggleGroup>
+          </CardContent>
         </Card>
       </div>
     </div>

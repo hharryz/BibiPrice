@@ -1,19 +1,25 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { siteLib } from "@/config/site";
+import { siteLib } from "@/lib/site";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
+import { Toaster } from "@/components/ui/sonner"
 import "./globals.css";
 
 const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
+  src: "../static/fonts/GeistVF.woff",
   variable: "--font-geist-sans",
   weight: "100 900",
 });
 const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
+  src: "../static/fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
   weight: "100 900",
+});
+const staatliches = localFont({
+  src: "../static/fonts/Staatliches.woff",
+  variable: "--font-staatliches",
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -21,7 +27,6 @@ export const metadata: Metadata = {
     default: siteLib.name,
     template: `%s - ${siteLib.name}`,
   },
-  description: siteLib.description,
   icons: {
     icon: "/favicon.ico",
   },
@@ -35,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${staatliches.variable} antialiased`}
       >
         <ThemeProvider
             attribute="class"
@@ -45,6 +50,7 @@ export default function RootLayout({
           >
             <Header />
             {children}
+            <Toaster />
           </ThemeProvider>
       </body>
     </html>

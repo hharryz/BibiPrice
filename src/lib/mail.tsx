@@ -1,6 +1,6 @@
 import { EmailConfig } from "next-auth/providers";
 import { render } from "@react-email/render";
-import { MagicLinkEmail, SubscriptionEmail } from "./templateMail";
+import { MagicLinkEmail, SubscriptionEmail } from "./template-mail";
 import type { Product } from "@/types/product/product";
 
 export async function sendAuthRequest(params: {

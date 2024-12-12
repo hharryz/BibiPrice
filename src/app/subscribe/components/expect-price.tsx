@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 
 import { useState } from "react";
 import { updateExpectedPrice } from "./subscribe";
+import { toast } from "sonner";
 
 export default function ExpectInput({
   product,
@@ -24,6 +25,9 @@ export default function ExpectInput({
       action={async () => {
         if (price !== null)
           await updateExpectedPrice(product.identifier, price.toString());
+        toast("更新成功", {
+          description: "降价到您的预期价格，我们会邮件通知您",
+        });
       }}
     >
       <Input

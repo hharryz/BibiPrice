@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import updateForm, { FormData } from "./update";
 import { useSession } from "next-auth/react";
 import { SessionProvider } from "next-auth/react";
+import { toast } from "sonner";
 
 function ItemBox({
   item,
@@ -111,6 +112,9 @@ function _UserInfoCard() {
               await updateForm(formData);
             } catch (error) {
               console.error(error);
+              toast("保存失败", {
+                description: "请检查用户名、密码是否符合要求！",
+              });
             }
           }}
         >

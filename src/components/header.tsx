@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CircleUser, Package2, Search } from "lucide-react";
+import { CircleUser, Package2 } from "lucide-react";
 
 import { ModeToggle } from "@/components/ui/modetoggle";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 
 import { siteLib } from "@/config/site";
 import { auth, signOut } from "@/auth";
@@ -21,7 +20,7 @@ export const Header = async () => {
 
   return (
     <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-      <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
+      <nav className="flex flex-row font-medium items-center text-sm gap-5 md:gap-6">
         <Link
           href="#"
           className="flex items-center gap-2 text-lg font-semibold md:text-base"
@@ -40,16 +39,8 @@ export const Header = async () => {
         ))}
       </nav>
       <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-        <form className="ml-auto flex-1 sm:flex-initial">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search products..."
-              className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
-            />
-          </div>
-        </form>
+        <div className="ml-auto flex-1 sm:flex-initial">
+        </div>
         <ModeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
