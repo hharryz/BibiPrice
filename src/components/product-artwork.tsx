@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { PriceHistory, Product } from "@/types/product/product";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, Store, ChartSpline } from "lucide-react";
 
@@ -17,7 +17,10 @@ import {
 import { HistoryChart } from "./history-chart";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {addProduct, removeProduct} from "@/app/subscribe/components/subscribe";
+import {
+  addProduct,
+  removeProduct,
+} from "@/app/subscribe/components/subscribe";
 
 import getHistory from "@/app/compare/[slug]/components/get-history";
 
@@ -71,14 +74,16 @@ export function ProductArtwork({
               </Badge>
             </div>
             <div className="pt-4 gap-4 flex flex-row ">
-              <Button className="gap-2 h-8" 
-              onClick={() => {
-                if (isSubscribed) {
-                  removeProduct(product.identifier);
-                } else {
-                  addProduct(product.identifier);
-                }
-              }}
+              <Button
+                className="gap-2 h-8"
+                onClick={() => {
+                  if (isSubscribed) {
+                    removeProduct(product.identifier);
+                    // window.location.reload();
+                  } else {
+                    addProduct(product.identifier);
+                  }
+                }}
               >
                 <Star className="h-4 w-4" />
                 {isSubscribed ? "取消订阅" : "订阅"}
@@ -99,23 +104,18 @@ const HoverPriceHistory = ({ pId }: HoverPriceHistoryProps) => {
   const fetchHistoryPrice = async () => {
     setLoading(true);
     try {
-      const res = await getHistory(pId); // 假设这是你的后端 API
-      console.log(res);
+      const res = await getHistory(pId);
       setData(res);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
-      console.log("finally");
       setLoading(false);
     }
   };
 
   const handleOpenChange = (open: boolean) => {
-    console.log("open", open);
-    console.log("data", data);
     if (open && data.length === 0) {
       fetchHistoryPrice(); // Only fetch data if it's not already loaded
-      console.log("fetching data");
     }
   };
 
@@ -132,9 +132,8 @@ const HoverPriceHistory = ({ pId }: HoverPriceHistoryProps) => {
           <p>正在加载...</p>
         ) : data.length == 0 ? (
           <p>暂无价格走势</p>
-          
         ) : (
-          <HistoryChart chartData={data}/>
+          <HistoryChart chartData={data} />
         )}
       </HoverCardContent>
     </HoverCard>

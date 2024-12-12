@@ -4,6 +4,9 @@ import Link from "next/link";
 import { ProductArtwork } from "@/components/product-artwork";
 import type { Product } from "@/types/product/product";
 import { updateSubscription } from "./components/subscribe";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ExpectInput from "./components/expect-price";
+import { getExpectedPrice } from "./components/subscribe";
 
 export default async function Subscribe() {
   const session = await auth();
@@ -15,7 +18,7 @@ export default async function Subscribe() {
     );
   }
 
-//   await updateSubscription()
+  await updateSubscription();
 
   const subcriptions = await prisma.subscription.findMany({
     where: {
@@ -23,7 +26,7 @@ export default async function Subscribe() {
     },
   });
 
-  console.log(subcriptions);
+  console.log("[Getting Subscriptions], subscriptions info: ", subcriptions);
 
   const products: Product[] = await prisma.product
     .findMany({
@@ -49,20 +52,25 @@ export default async function Subscribe() {
       });
     });
 
-  console.log(products);
-
   return (
     <div className="flex flex-col items-start justify-center gap-4 rounded-lg ml-8 mt-8">
-      {products?.map((product) => {
+      {products?.map(async (product) => {
+        const price = await getExpectedPrice(product.identifier);
         return (
-          <div className="flex flex-row items-center justify-center">
+          <div
+            className="flex flex-row items-center justify-center gap-4"
+            key={product.identifier}
+          >
             {" "}
-            <ProductArtwork
-              key={product.identifier}
-              product={product}
-              isSubscribed={true}
-            />
-            <div>Expected Price</div>
+            <ProductArtwork product={product} isSubscribed={true} />
+            <Card>
+              <CardHeader>
+                <CardTitle>预期价格</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ExpectInput product={product} expectPrice={price} />
+              </CardContent>
+            </Card>
           </div>
         );
       })}

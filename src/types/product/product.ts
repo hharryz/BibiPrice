@@ -1,14 +1,16 @@
 export type Product = {
-  id: string;
   name: string;
-  description: string;
-  price: number;
+  description: string | null;
+  shop: string;
+  price: string;
   image: string;
   platform: string;
-  barcode: string;
-  category: string;
+  identifier: string;
+  category: string[];
   url: string;
+};
 
-  createdAt: string;
-  updatedAt: string;
+export type PriceHistory = {
+  date: Date;
+  price: number;
 };

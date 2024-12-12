@@ -2,7 +2,6 @@
 
 import prisma from "@/lib/prisma";
 import { PriceHistory } from "@/types/product/product";
-import { date } from "zod";
 
 export default async function getHistory(pId: string) {
   const priceHistory = await prisma.priceHistory.findMany({
@@ -15,7 +14,7 @@ export default async function getHistory(pId: string) {
   });
 
   //  filter the price history to only include records that are at least 1 day apart
-  const filteredHistory : PriceHistory[] = priceHistory
+  const filteredHistory: PriceHistory[] = priceHistory
     .filter((record, index, array) => {
       if (index === 0) return true;
       const previousRecord = array[index - 1];

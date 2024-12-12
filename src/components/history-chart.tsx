@@ -3,13 +3,7 @@
 import * as React from "react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
@@ -17,30 +11,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { PriceHistory } from "@/types/product/product";
-const chartData = [
-  { date: "2024-04-01", price: 10.11 },
-  { date: "2024-05-02", price: 18.12 },
-  { date: "2024-06-03", price: 20.2 },
-  { date: "2024-07-04", price: 30.1 },
-  { date: "2024-07-05", price: 40.1 },
-  { date: "2024-07-06", price: 50.1 },
-  { date: "2024-07-07", price: 60.1 },
-  { date: "2024-07-08", price: 7.1 },
-  { date: "2024-07-09", price: 8.1 },
-  { date: "2024-07-10", price: 9.1 },
-  { date: "2024-07-11", price: 1.1 },
-  { date: "2024-07-12", price: 11.1 },
-  { date: "2024-07-13", price: 12.1 },
-  { date: "2024-07-14", price: 13.1 },
-  { date: "2024-07-15", price: 14.1 },
-  { date: "2024-07-16", price: 15.1 },
-  { date: "2024-07-17", price: 16.1 },
-  { date: "2024-07-18", price: 17.1 },
-  { date: "2024-07-28", price: 27.1 },
-  { date: "2024-07-29", price: 28.1 },
-  { date: "2024-07-30", price: 29.1 },
-  { date: "2024-07-31", price: 30.1 },
-];
 
 const chartConfig = {
   price: {
@@ -49,18 +19,19 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function HistoryChart({chartData}: {chartData: PriceHistory[]}) {
-  const avgPrice = chartData ? chartData.reduce((acc, cur) => acc + cur.price, 0) / chartData.length : 0;
+export function HistoryChart({ chartData }: { chartData: PriceHistory[] }) {
+  const avgPrice = chartData
+    ? chartData.reduce((acc, cur) => acc + cur.price, 0) / chartData.length
+    : 0;
 
-  const displayData = chartData.map((record) => {
-    return {
-      date: record.date
-      .toISOString().split('T')[0],
-      price: record.price,
-    };
-  }).reverse();
-
-  console.log(chartData);
+  const displayData = chartData
+    .map((record) => {
+      return {
+        date: record.date.toISOString().split("T")[0],
+        price: record.price,
+      };
+    })
+    .reverse();
 
   return (
     <Card>

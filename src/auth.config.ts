@@ -23,7 +23,10 @@ export default {
 
           // logic to verify if the user exists
           user = await getUserFromDb(email, password);
-          console.log("Authenticating user, ", user)
+          console.log(
+            "[Authenticating User By Email - Password], user info: ",
+            user
+          );
           if (!user) {
             throw new Error(`User not found. If it's your first time logging in,
                              please register via email magic link.`);
@@ -32,11 +35,14 @@ export default {
           // return JSON object with the user data
           return user;
         } catch (error) {
+          console.log(
+            "[Error Authenticating User By Email - Password], error info: ",
+            error
+          );
           if (error instanceof ZodError) {
             // Return `null` to indicate that the credentials are invalid
             return null;
           }
-          console.log(error);
         }
       },
     }),

@@ -1,9 +1,7 @@
-import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import UserInfoCard from "./components/user-info";
 
 export default async function User() {
-  let user = null;
   const session = await auth();
 
   if (session === null) {
@@ -12,15 +10,6 @@ export default async function User() {
         <h1>请先登录！</h1>
       </>
     );
-  } else {
-    if (session.user?.email)
-      user = await prisma.user.findUnique({
-        where: {
-          // id: session.user.id,
-          email: session.user.email,
-        },
-      });
-    console.log(user);
   }
 
   return (

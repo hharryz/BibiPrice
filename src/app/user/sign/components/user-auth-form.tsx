@@ -11,13 +11,14 @@ import { authMagicLink, authPassword } from "./sign-request";
 
 import { AuthError } from "next-auth";
 
-
 export function UserAuthForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const [isLoadingMagicLink, setIsLoadingMagicLink] = React.useState<boolean>(false);
-  const [isLoadingPassword, setIsLoadingPassword] = React.useState<boolean>(false);
+  const [isLoadingMagicLink, setIsLoadingMagicLink] =
+    React.useState<boolean>(false);
+  const [isLoadingPassword, setIsLoadingPassword] =
+    React.useState<boolean>(false);
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
 
@@ -31,7 +32,7 @@ export function UserAuthForm({
       });
     } catch (error) {
       if (error instanceof AuthError) {
-        console.log(error);
+        console.log("[Error in UserAuthForm] Magic Link", error);
       }
       throw error;
     }
@@ -48,10 +49,10 @@ export function UserAuthForm({
     try {
       await authPassword(email, password).then(() => {
         setIsLoadingPassword(false);
-      }); 
+      });
     } catch (error) {
       if (error instanceof AuthError) {
-        console.log(error);
+        console.log("[Error in UserAuthForm] Password", error);
       }
       throw error;
     }
@@ -83,7 +84,9 @@ export function UserAuthForm({
           />
         </div>
         <Button disabled={isLoadingMagicLink} onClick={submitMagicLink}>
-          {isLoadingMagicLink && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoadingMagicLink && (
+            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+          )}
           MagicLink验证
         </Button>
       </div>
@@ -99,15 +102,17 @@ export function UserAuthForm({
         </div>
       </div>
       <Input
-            id="email"
-            placeholder="请输入密码..."
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            type="password"
-            disabled={isLoadingPassword}
-          />
+        id="email"
+        placeholder="请输入密码..."
+        value={password}
+        onChange={(event) => setPassword(event.target.value)}
+        type="password"
+        disabled={isLoadingPassword}
+      />
       <Button disabled={isLoadingPassword} onClick={submitPassword}>
-        {isLoadingPassword && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+        {isLoadingPassword && (
+          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+        )}
         密码登录
       </Button>
     </div>

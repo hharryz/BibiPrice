@@ -10,7 +10,6 @@ import { sendSubscription } from "@/lib/mail";
 export async function addProduct(identifier: string) {
   const session = await auth();
   if (session === null || session?.user?.id === undefined) {
-    console.log("请先注册，跳转链接：<Link href='/user/sign'>点此跳转</Link>");
     return;
   }
   await prisma.subscription.create({
@@ -19,13 +18,11 @@ export async function addProduct(identifier: string) {
       pIdentifier: identifier,
     },
   });
-  console.log("add product", session.user.id, identifier);
 }
 
 export async function removeProduct(identifier: string) {
   const session = await auth();
   if (session === null || session?.user?.id === undefined) {
-    console.log("请先注册，跳转链接：<Link href='/user/sign'>点此跳转</Link>");
     return;
   }
   await prisma.subscription.deleteMany({
@@ -34,13 +31,52 @@ export async function removeProduct(identifier: string) {
       pIdentifier: identifier,
     },
   });
-  console.log("remove product", session.user.id, identifier);
+}
+
+export async function updateExpectedPrice(identifier: string, price: string) {
+  const session = await auth();
+  if (session === null || session?.user?.id === undefined) {
+    return;
+  }
+  await prisma.subscription.updateMany({
+    where: {
+      userId: session.user.id,
+      pIdentifier: identifier,
+    },
+    data: {
+      expectedPrice: price,
+    },
+  });
+  console.log(
+    "[Updating User Expected Price] product : ",
+    identifier,
+    " user id: ",
+    session.user.id,
+    " expected price: ",
+    price
+  );
+}
+
+export async function getExpectedPrice(identifier: string) {
+  const session = await auth();
+  if (session === null || session?.user?.id === undefined) {
+    return;
+  }
+  const subscription = await prisma.subscription.findFirst({
+    where: {
+      userId: session.user.id,
+      pIdentifier: identifier,
+    },
+    select: {
+      expectedPrice: true,
+    },
+  });
+  return subscription?.expectedPrice;
 }
 
 export async function updateSubscription() {
   const session = await auth();
   if (session === null || session?.user?.id === undefined) {
-    console.log("请先注册，跳转链接：<Link href='/user/sign'>点此跳转</Link>");
     return;
   }
 
@@ -65,8 +101,15 @@ export async function updateSubscription() {
           nowPrice = await detailDangdang(sub.pIdentifier.replace("dd", ""));
         } else if (sub.pIdentifier.startsWith("kfz")) {
           nowPrice = await detailKongfuzi(sub.pIdentifier.replace("kfz", ""));
+        } else {
+          return; //  omit other platforms
         }
-        console.log("update subscription", sub.pIdentifier, nowPrice);
+        console.log(
+          "[Querying and Updating Product Price] product :",
+          sub.pIdentifier,
+          " price: ",
+          nowPrice
+        );
         await prisma.priceHistory.create({
           data: {
             price: nowPrice,
@@ -100,7 +143,7 @@ export async function updateSubscription() {
     );
 
     if (alerts.length > 0) {
-      console.log("alerts", alerts);
+      console.log("[Find Alerts, Sending Email to User] Alerts are :", alerts);
       //  send email to user
       sendSubscription({
         to: session.user?.email ? session.user.email : "",
@@ -110,7 +153,10 @@ export async function updateSubscription() {
   };
 
   setInterval(async () => {
-    console.log("update subscription");
+    console.log(
+      "[Round-Robin Update Routine for User Subscriptions] at",
+      new Date()
+    );
     updatePrice();
   }, 1000 * 60 * 60 * 24); //  round-robin update every 24 hours
 

@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { siteLib } from "@/config/site";
-import { auth } from "@/auth";
+import { auth, signOut } from "@/auth";
 
 export const Header = async () => {
   const session = await auth();
@@ -29,17 +29,15 @@ export const Header = async () => {
           <Package2 className="h-6 w-6" />
           <span className="sr-only">Acme Inc</span>
         </Link>
-        {
-          siteLib.navItems.map((item, index) => (
-            <Link
-              key={index}
-              href={item.href}
-              className="text-muted-foreground transition-colors hover:text-foreground w-10 justify-center text-base"
-            >
-              {item.label}
-            </Link>
-          ))
-        }
+        {siteLib.navItems.map((item, index) => (
+          <Link
+            key={index}
+            href={item.href}
+            className="text-muted-foreground transition-colors hover:text-foreground w-10 justify-center text-base"
+          >
+            {item.label}
+          </Link>
+        ))}
       </nav>
       <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
         <form className="ml-auto flex-1 sm:flex-initial">
@@ -61,17 +59,35 @@ export const Header = async () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>{
-              session ? session.user?.email : "访客"
-              }</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              {session ? session.user?.email : "访客"}
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem><Link href="/user/sign">注册/登录</Link></DropdownMenuItem>
-            <DropdownMenuItem>设置</DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href="/user/sign" className="w-full">
+                注册/登录
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href="/user/setting" className="w-full">
+                设置
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>退出</DropdownMenuItem>
+            <DropdownMenuItem>
+              <form
+                className="w-full"
+                action={async () => {
+                  "use server";
+                  await signOut();
+                }}
+              >
+                <button type="submit">退出</button>
+              </form>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
     </header>
   );
-}
+};
