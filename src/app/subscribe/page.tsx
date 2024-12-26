@@ -58,7 +58,7 @@ export default async function Subscribe() {
         const price = await getExpectedPrice(product.identifier);
         return (
           <div
-            className="flex flex-row items-center justify-center gap-4"
+            className="flex flex-col items-center justify-center gap-4 xl:flex-row"
             key={product.identifier}
           >
             {" "}

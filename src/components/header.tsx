@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { siteLib } from "@/config/site";
+import { siteLib } from "@/lib/site";
 import { auth, signOut } from "@/auth";
 
 export const Header = async () => {
@@ -39,8 +39,7 @@ export const Header = async () => {
         ))}
       </nav>
       <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-        <div className="ml-auto flex-1 sm:flex-initial">
-        </div>
+        <div className="ml-auto flex-1 sm:flex-initial"></div>
         <ModeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
